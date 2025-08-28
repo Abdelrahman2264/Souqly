@@ -1,0 +1,250 @@
+<!-- profile.component.html -->
+<div class="profile-container">
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <button class="theme-toggle-btn" [class.active]="!isDarkTheme" (click)="setTheme(false)">
+      <i class="fas fa-sun"></i>
+    </button>
+    <button class="theme-toggle-btn" [class.active]="isDarkTheme" (click)="setTheme(true)">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <h2>User Profile</h2>
+      <p>Manage your personal information</p>
+    </div>
+
+    <div class="profile-content">
+      <div class="edit-toggle">
+        <button (click)="toggleEdit()" class="edit-btn">
+          <i class="fas" [class.fa-edit]="!isEditing" [class.fa-times]="isEditing"></i>
+          {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+        </button>
+        <button class="edit-btn" (click)="openFavItemsSidebar()">View All Favorite Items</button>
+        <button class="edit-btn" (click)="openFavDepartmentsSidebar()">View All Favorite Departments</button>
+      </div>
+
+      <form class="profile-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input 
+              type="text" 
+              id="firstName" 
+              [(ngModel)]="user.firstName" 
+              name="firstName"
+              [readonly]="!isEditing"
+              [class.editable]="isEditing"
+              placeholder="Enter your first name">
+          </div>
+          
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input 
+              type="text" 
+              id="lastName" 
+              [(ngModel)]="user.lastName" 
+              name="lastName"
+              [readonly]="!isEditing"
+              [class.editable]="isEditing"
+              placeholder="Enter your last name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="user.email" 
+            name="email"
+            [readonly]="!isEditing"
+            [class.editable]="isEditing"
+            placeholder="Enter your email address">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            [(ngModel)]="user.phone" 
+              name="phone"
+              [readonly]="!isEditing"
+              [class.editable]="isEditing"
+              placeholder="Enter your phone number">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="country">Country</label>
+              <select 
+                id="country" 
+                [(ngModel)]="user.country" 
+                name="country"
+                [disabled]="!isEditing"
+                [class.editable]="isEditing">
+                <option value="" disabled>Select your country</option>
+                <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="city">City</label>
+              <input 
+                type="text" 
+                id="city" 
+                [(ngModel)]="user.city" 
+                name="city"
+                [readonly]="!isEditing"
+                [class.editable]="isEditing"
+                placeholder="Enter your city">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateOfBirth">Date of Birth</label>
+              <input 
+                type="date" 
+                id="dateOfBirth" 
+                [value]="user.dateOfBirth" 
+                (change)="onDateChange($event)"
+                name="dateOfBirth"
+                [disabled]="!isEditing"
+                [class.editable]="isEditing">
+              <div class="age-display" *ngIf="age > 0">Age: {{ age }} years</div>
+            </div>
+            
+            <div class="form-group">
+              <label>Gender</label>
+              <div class="gender-options">
+                <label>
+                  <input 
+                    type="radio" 
+                    name="gender" 
+                    value="male" 
+                    [(ngModel)]="user.gender"
+                    [disabled]="!isEditing">
+                  <span>Male</span>
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="gender" 
+                    value="female" 
+                    [(ngModel)]="user.gender"
+                    [disabled]="!isEditing">
+                  <span>Female</span>
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="gender" 
+                    value="other" 
+                    [(ngModel)]="user.gender"
+                    [disabled]="!isEditing">
+                  <span>Other</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="action-buttons" *ngIf="isEditing">
+          <button (click)="saveChanges()" class="save-btn">Save Changes</button>
+        </div>
+
+        <!-- Favorite Items Section -->
+        <div class="favorites-section">
+          <div class="section-header">
+            <h3 class="section-title">Favorite Items</h3>
+            <a class="view-all" (click)="$event.preventDefault(); openFavItemsSidebar()">View All</a>
+          </div>
+          
+          <div class="favorites-grid" *ngIf="favoriteItems.length > 0; else noItems">
+            <div class="favorite-item" *ngFor="let item of favoriteItems">
+              <img [src]="item.thumbnail" [alt]="item.title" class="favorite-image">
+              <div class="favorite-info">
+                <div class="favorite-name">{{ item.title }}</div>
+                <div class="favorite-price">{{ item.price | currency }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noItems>
+            <div class="empty-state">
+              <i class="fas fa-heart"></i>
+              <p>You don't have any favorite items yet</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Favorite Departments Section -->
+        <div class="favorites-section">
+          <div class="section-header">
+            <h3 class="section-title">Favorite Departments</h3>
+            <a class="view-all" (click)="$event.preventDefault(); openFavDepartmentsSidebar()">View All</a>
+          </div>
+          
+          <div class="favorites-grid" *ngIf="favoriteDepartments.length > 0; else noDepartments">
+            <div class="favorite-category" *ngFor="let department of favoriteDepartments">
+              {{ department.name }}
+              <button class="remove-btn" (click)="removeDepartment(department)" title="Remove from favorites">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <ng-template #noDepartments>
+            <div class="empty-state">
+              <i class="fas fa-tags"></i>
+              <p>You don't have any favorite departments yet</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorite Items Sidebar -->
+  <div class="sidebar-overlay" *ngIf="showFavItemsSidebar" (click)="closeSidebars()"></div>
+  <aside class="sidebar" [class.open]="showFavItemsSidebar">
+    <div class="sidebar-header">
+      <h3>Favorite Items</h3>
+      <button class="close" (click)="closeSidebars()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sidebar-content">
+      <div *ngIf="favoriteItems.length === 0" class="empty">No favorite items</div>
+      <div *ngFor="let item of favoriteItems" class="fav-item">
+        <img [src]="item.thumbnail" [alt]="item.title">
+        <div class="info">
+          <div class="title">{{ item.title }}</div>
+          <div class="price">{{ item.price | currency }}</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Favorite Departments Sidebar -->
+  <div class="sidebar-overlay" *ngIf="showFavDepartmentsSidebar" (click)="closeSidebars()"></div>
+  <aside class="sidebar" [class.open]="showFavDepartmentsSidebar">
+    <div class="sidebar-header">
+      <h3>Favorite Departments</h3>
+      <button class="close" (click)="closeSidebars()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sidebar-content">
+      <div *ngIf="favoriteDepartments.length === 0" class="empty">No favorite departments</div>
+      <div *ngFor="let department of favoriteDepartments" class="fav-cat">
+        {{ department.name || department.name }}
+        <button class="remove-btn" (click)="removeDepartment(department)" title="Remove from favorites">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </aside>

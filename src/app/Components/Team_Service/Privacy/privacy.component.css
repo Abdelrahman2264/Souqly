@@ -1,0 +1,154 @@
+.privacy-container {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.privacy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.privacy-header h1 {
+  color: var(--primary-color);
+  font-size: 2.2rem;
+}
+
+.theme-toggle {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--primary-dark);
+}
+
+.privacy-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.intro-section {
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.policy-section {
+  margin-bottom: 40px;
+  padding: 25px;
+  background-color: var(--bg-nav);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.policy-section h2 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.policy-section p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.policy-section ul {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.policy-section li {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.developers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.developer-card {
+  background-color: var(--bg-primary);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s;
+}
+
+.developer-card:hover {
+  transform: translateY(-5px);
+}
+
+.developer-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.developer-card p {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+address {
+  font-style: normal;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.privacy-footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .privacy-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .privacy-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .developers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .policy-section {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .privacy-container {
+    padding: 15px;
+  }
+  
+  .privacy-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .policy-section h2 {
+    font-size: 1.3rem;
+  }
+}

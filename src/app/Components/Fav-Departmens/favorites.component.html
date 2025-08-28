@@ -1,0 +1,47 @@
+<!-- favorites.component.html -->
+<div class="favorites-overlay" [class.active]="isOpen" (click)="onOverlayClick($event)">
+  <div class="favorites-sidebar" [class.active]="isOpen" [class.dark-theme]="isDarkTheme">
+    <div class="favorites-header">
+      <h2>Favorite Departments</h2>
+      <button class="close-btn" (click)="closeFavorites.emit()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="favorites-content">
+      <div class="empty-favorites" *ngIf="favoriteDepartments.length === 0">
+        <i class="fas fa-heart"></i>
+        <p>No favorite departments yet</p>
+        <p>Start adding departments you love!</p>
+      </div>
+
+      <div class="favorites-items" *ngIf="favoriteDepartments.length > 0">
+        <div class="favorites-item" *ngFor="let department of favoriteDepartments">
+          <div class="item-image">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="item-details">
+            <h3 class="item-title">{{ department.name }}</h3>
+            <div class="item-pricing">
+              <span class="current-price">Explore products</span>
+            </div>
+          </div>
+          <button class="remove-btn" (click)="removeDepartment(department)" title="Remove from favorites">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="favorites-footer" *ngIf="favoriteDepartments.length > 0">
+      <div class="favorites-count">
+        <span>{{ favoriteDepartments.length }} department{{ favoriteDepartments.length !== 1 ? 's' : '' }}</span>
+      </div>
+      <div class="favorites-actions">
+        <button class="clear-btn" (click)="clearFavorites()">
+          <i class="fas fa-trash"></i> Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

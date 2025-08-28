@@ -1,0 +1,323 @@
+import { Component, OnInit, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { CookieService } from '../../services/cookie.service';
+import { CartComponent } from '../Cart/cart.component';
+import { FavoritesComponent } from '../Favorites/favorites.component';
+import { CartService } from '../../services/cart.service';
+import { FavoritesService } from '../../services/favorites.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+@Component({
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, HttpClientModule, CartComponent, FavoritesComponent]
+})
+export class HeaderComponent implements OnInit {
+  isDarkTheme = false;
+  isMenuOpen = false;
+  showTagline = false;
+  currentLogo = 'assets/images/Logo00.png';
+  isFavoritesOpen = false;
+  favoriteCount = 0;
+  
+  // Dropdown states
+  isDepartmentsOpen = false;
+  isProfileOpen = false;
+  isJoinUsOpen = false;
+  
+  // Categories loaded from API
+  departments: string[] = [];
+
+  isAuthenticated = false;
+
+  constructor(
+    public cookieService: CookieService,
+    public router: Router,
+    private cartService: CartService,
+    private favoritesService: FavoritesService,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit() {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      
+      if (savedTheme === 'dark') {
+        this.applyDarkTheme();
+        this.currentLogo = 'assets/images/DarkLogo.png';
+      } else {
+        this.applyLightTheme();
+        this.currentLogo = 'assets/images/Logo00.png';
+      }
+    }
+
+    this.checkAuthentication();
+    this.loadDepartmentsFromApi();
+
+    // Subscribe to cart and favorites to keep counts updated
+    this.cartService.cartItems$.subscribe(items => {
+      this.cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+    });
+
+    this.favoritesService.favorites$.subscribe(items => {
+      this.favoriteCount = items.length;
+    });
+
+    // Fallback: react to storage changes from other tabs/windows
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'souqlyCart') {
+          this.updateCartCount();
+        }
+        if (event.key === 'souqlyFavorites') {
+          const fav = localStorage.getItem('souqlyFavorites');
+          this.favoriteCount = fav ? JSON.parse(fav).length : 0;
+        }
+      });
+    }
+    
+    // Make cookie service available globally for debugging
+    if (typeof window !== 'undefined') {
+      (window as any).cookieService = this.cookieService;
+      (window as any).clearAllCookies = () => this.cookieService.manualClearAllCookies();
+      (window as any).debugStorage = () => this.cookieService.debugAllStorage();
+      (window as any).forceLogout = () => this.logout();
+      (window as any).testLogout = () => this.testLogout();
+      console.log('🔧 Debug methods available globally:');
+      console.log('- window.clearAllCookies() - Manual cookie removal');
+      console.log('- window.debugStorage() - Debug all storage');
+      console.log('- window.forceLogout() - Force logout');
+      console.log('- window.testLogout() - Test logout functionality');
+      console.log('- window.cookieService - Full service access');
+    }
+  }
+  private loadDepartmentsFromApi() {
+    this.http.get<any>('https://dummyjson.com/products/categories').subscribe({
+      next: (res) => {
+        // Handle both array-of-strings and array-of-objects shapes
+        if (Array.isArray(res)) {
+          this.departments = res.map((c: any) => typeof c === 'string' ? c : (c?.name || c?.slug || '')).filter(Boolean);
+        } else if (res?.categories) {
+          this.departments = res.categories.map((c: any) => c?.name || c?.slug).filter(Boolean);
+        }
+      },
+      error: () => {
+        this.departments = [];
+      }
+    });
+  }
+isCartOpen = false;
+cartItemCount = 0;
+
+// Add this to your ngOnInit or create a method to update cart count
+updateCartCount() {
+  if (typeof localStorage !== 'undefined') {
+    const cartData = localStorage.getItem('souqlyCart');
+    if (cartData) {
+      const cartItems = JSON.parse(cartData);
+      this.cartItemCount = cartItems.reduce((total: number, item: any) => total + item.quantity, 0);
+    } else {
+      this.cartItemCount = 0;
+    }
+  }
+}
+  checkAuthentication(): void {
+    // Check for authentication in all storage types
+    const authCookie = this.cookieService.get('souqlyAuth');
+    const localAuth = typeof localStorage !== 'undefined' ? localStorage.getItem('souqlyAuth') : null;
+    const sessionAuth = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('souqlyAuth') : null;
+    
+    // User is authenticated if any storage type contains authentication data
+    this.isAuthenticated = authCookie === 'true' || localAuth === 'true' || sessionAuth === 'true';
+    
+    console.log('Authentication status:', this.isAuthenticated);
+    console.log('Storage check - Cookies:', authCookie, 'localStorage:', localAuth, 'sessionStorage:', sessionAuth);
+    console.log('All cookies:', this.cookieService.listAllCookies());
+  }
+// Add this method to handle login state changes
+updateAuthenticationStatus(): void {
+  const authCookie = this.cookieService.get('souqlyAuth');
+  const localAuth = typeof localStorage !== 'undefined' ? localStorage.getItem('souqlyAuth') : null;
+  const sessionAuth = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('souqlyAuth') : null;
+  
+  // User is authenticated if any storage type contains authentication data
+  this.isAuthenticated = authCookie === 'true' || localAuth === 'true' || sessionAuth === 'true';
+  
+  console.log('Authentication status updated:', this.isAuthenticated);
+}
+
+// You can call this method whenever authentication might change
+  logout(): void {
+    console.log('Starting logout process (preserving registered users)...');
+    
+    // Clear only authentication data, not user registration data
+    this.clearAuthenticationOnly();
+    
+    // Verify authentication is cleared but users remain
+    setTimeout(() => {
+      console.log('Verifying logout completed...');
+      
+      // Check authentication items are cleared
+      const authCookie = this.cookieService.get('souqlyAuth');
+      const userCookie = this.cookieService.get('souqlyUser');
+      const localAuth = typeof localStorage !== 'undefined' ? localStorage.getItem('souqlyAuth') : null;
+      const localUser = typeof localStorage !== 'undefined' ? localStorage.getItem('souqlyUser') : null;
+      const sessionAuth = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('souqlyAuth') : null;
+      const sessionUser = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('souqlyUser') : null;
+      
+      // Check that registered users are preserved
+      const souqlyUser = typeof localStorage !== 'undefined' ? localStorage.getItem('souqlyUser') : null;
+      console.log('Registered users preserved:', !!souqlyUser);
+      
+      const authCleared = !authCookie && !localAuth && !sessionAuth;
+      
+      if (authCleared) {
+        console.log('✅ Authentication successfully cleared');
+      } else {
+        console.warn('⚠️ Some authentication items may not have been properly cleared');
+      }
+    }, 200);
+    
+    // Update authentication state
+    this.isAuthenticated = false;
+    
+    // Close profile dropdown
+    this.isProfileOpen = false;
+    
+    // Redirect to home page
+    this.router.navigate(['/']).then(() => {
+      console.log('Navigation to home completed');
+      // Force a reload to ensure clean state
+      window.location.reload();
+    });
+    
+    console.log('Logout process completed');
+  }
+
+  // Clear only authentication data, preserving registered users
+  private clearAuthenticationOnly(): void {
+    // Clear authentication cookies
+    this.cookieService.delete('souqlyAuth');
+    this.cookieService.delete('souqlyUser');
+    
+    // Clear authentication from localStorage (but keep souqlyUser for registered users)
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('souqlyAuth');
+      // Note: We DON'T remove 'souqlyUser' from localStorage to preserve registered users
+    }
+    
+    // Clear authentication from sessionStorage
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('souqlyAuth');
+      sessionStorage.removeItem('souqlyUser');
+    }
+    
+    console.log('Authentication data cleared, registered users preserved');
+  }
+
+  // Test method to verify logout functionality
+  testLogout(): void {
+    console.log('🧪 Testing logout functionality...');
+    
+    // First, check current state
+    console.log('Before logout:');
+    this.cookieService.debugAllStorage();
+    
+    // Perform logout
+    this.logout();
+    
+    // Check state after logout
+    setTimeout(() => {
+      console.log('After logout:');
+      this.cookieService.debugAllStorage();
+      
+      // Verify authentication status
+      this.checkAuthentication();
+      console.log('Authentication status after logout:', this.isAuthenticated);
+    }, 500);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!(event.target as Element).closest('.dropdown')) {
+      this.isDepartmentsOpen = false;
+      this.isProfileOpen = false;
+      this.isJoinUsOpen = false;
+    }
+  }
+
+  toggleTheme() {
+    this.isDarkTheme = !this.isDarkTheme;
+
+    if (this.isDarkTheme) {
+      this.applyDarkTheme();
+      this.currentLogo = 'assets/images/DarkLogo.png';
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem('theme', 'dark');
+      }
+    } else {
+      this.applyLightTheme();
+      this.currentLogo = 'assets/images/Logo00.png';
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem('theme', 'light');
+      }
+    }
+  }
+
+  applyDarkTheme() {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.add('dark-theme');
+    }
+    this.isDarkTheme = true;
+  }
+
+  applyLightTheme() {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.remove('dark-theme');
+    }
+    this.isDarkTheme = false;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onLogoHover(isHovering: boolean) {
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      this.showTagline = isHovering;
+    }
+  }
+
+  toggleDropdown(dropdown: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    if (dropdown !== 'departments') this.isDepartmentsOpen = false;
+    if (dropdown !== 'profile') this.isProfileOpen = false;
+    if (dropdown !== 'joinus') this.isJoinUsOpen = false;
+    
+    switch (dropdown) {
+      case 'departments':
+        this.isDepartmentsOpen = !this.isDepartmentsOpen;
+        break;
+      case 'profile':
+        this.isProfileOpen = !this.isProfileOpen;
+        break;
+      case 'joinus':
+        this.isJoinUsOpen = !this.isJoinUsOpen;
+        break;
+    }
+  }
+
+  closeAllDropdowns() {
+    this.isDepartmentsOpen = false;
+    this.isProfileOpen = false;
+    this.isJoinUsOpen = false;
+  }
+}
