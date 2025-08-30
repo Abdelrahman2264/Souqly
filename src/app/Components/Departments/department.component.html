@@ -1,0 +1,136 @@
+<div class="container py-4" *ngIf="!isLoading; else loadingTpl">
+  <div class="welcome-section mb-4">
+    <h1 class="display-6 fw-bold">{{ displayName }}</h1>
+    <p class="lead">{{ description }}</p>
+    <button class="btn btn-outline-primary" (click)="toggleFavoriteDepartment()">
+      <i class="fas" [class.fa-heart]="isFavoriteDepartment" [class.fa-heart-broken]="!isFavoriteDepartment"></i>
+      {{ isFavoriteDepartment ? 'Remove from Favorite Departments' : 'Add to Favorite Departments' }}
+    </button>
+  </div>
+
+  <div class="row">
+    <div *ngFor="let p of products" class="col-md-3 mb-4">
+      <div class="card product-card h-100">
+        <div class="sale-badge" *ngIf="p.discountPercentage > 0">Sale {{p.discountPercentage}}% OFF</div>
+        <img [src]="p.thumbnail" class="card-img-top" [alt]="p.title">
+        <div class="card-body">
+          <h5 class="card-title">{{p.title}}</h5>
+          <div class="price-container">
+            <div>
+              <span class="original-price me-2" *ngIf="p.discountPercentage > 0">
+                ${{p.price | number:'1.2-2'}}
+              </span>
+              <span class="discounted-price">
+                ${{(p.price * (1 - (p.discountPercentage || 0)/100)).toFixed(2)}}
+              </span>
+            </div>
+            <span class="rating-badge">{{p.rating}} ★</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="action-buttons">
+            <button class="btn btn-primary" (click)="addToCart(p)">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="btn btn-outline-primary" [class.active]="isFavorite(p.id)" (click)="addToFavorites(p)">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="btn btn-outline-secondary" (click)="showProductDetail(p)">
+              <i class="fas fa-info"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product details modal (same UX as Home) -->
+  <div *ngIf="showProductDetails && selectedProduct" class="product-details-modal">
+    <div class="modal-content">
+      <button class="close-btn" (click)="closeProductDetail()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="product-gallery">
+              <img [src]="getCurrentImage()" [alt]="selectedProduct.title" class="main-image">
+              <div class="thumbnail-list">
+                <img *ngFor="let image of selectedProduct.images; let i = index" [src]="image"
+                  [alt]="selectedProduct.title + ' thumbnail'" [class.active]="i === selectedImageIndex"
+                  (click)="changeMainImage(i)">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h2 class="product-title">{{selectedProduct.title}}</h2>
+            <div class="product-meta">
+              <span class="brand">Brand: {{selectedProduct.brand}}</span>
+              <span class="rating">Rating: {{selectedProduct.rating}} ★</span>
+            </div>
+            <div class="price-container">
+              <span class="original-price me-2" *ngIf="selectedProduct.discountPercentage > 0">
+                ${{selectedProduct.price | number:'1.2-2'}}
+              </span>
+              <span class="discounted-price">
+                ${{(selectedProduct.price * (1 - (selectedProduct.discountPercentage || 0)/100)).toFixed(2)}}
+              </span>
+              <span class="discount-badge" *ngIf="selectedProduct.discountPercentage > 0">
+                Save {{selectedProduct.discountPercentage}}%
+              </span>
+            </div>
+            <p class="product-description">{{selectedProduct.description}}</p>
+            <div class="product-specs"
+              *ngIf="selectedProduct.sku || selectedProduct.weight || selectedProduct.dimensions">
+              <h4>Specifications</h4>
+              <div class="specs-grid">
+                <div class="spec-item" *ngIf="selectedProduct.weight">
+                  <span class="spec-label">Weight:</span>
+                  <span class="spec-value">{{selectedProduct.weight}}g</span>
+                </div>
+                <div class="spec-item" *ngIf="selectedProduct.dimensions">
+                  <span class="spec-label">Dimensions:</span>
+                  <span class="spec-value">{{selectedProduct.dimensions.width}} x {{selectedProduct.dimensions.height}}
+                    x {{selectedProduct.dimensions.depth}} cm</span>
+                </div>
+                <div class="spec-item" *ngIf="selectedProduct.sku">
+                  <span class="spec-label">SKU:</span>
+                  <span class="spec-value">{{selectedProduct.sku}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-primary" (click)="addToCart(selectedProduct)">
+                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+              </button>
+              <button class="btn btn-outline-primary" [class.active]="isFavorite(selectedProduct.id)"
+                (click)="addToFavorites(selectedProduct)">
+                <i class="fas fa-heart me-2"></i> {{isFavorite(selectedProduct.id) ? 'Remove from Favorites' : 'Add to
+                Favorites'}}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-reviews mt-4" *ngIf="selectedProduct.reviews?.length">
+          <h4>Customer Reviews</h4>
+          <div *ngFor="let review of selectedProduct.reviews" class="review-item">
+            <div class="review-header">
+              <span class="reviewer">{{review.reviewerName}}</span>
+              <span class="review-date">{{review.date | date}}</span>
+              <span class="review-rating">{{review.rating}} ★</span>
+            </div>
+            <p class="review-comment">{{review.comment}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="text-center py-5">
+    <div class="loading-spinner"></div>
+    <p class="mt-3">Loading department...</p>
+  </div>
+</ng-template>

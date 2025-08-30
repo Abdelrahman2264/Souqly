@@ -1,0 +1,60 @@
+<section class="deals-section">
+  <div class="container">
+   <h1 class="page-title">Special Deals & Offers</h1>
+    <p class="page-description">
+      Discover amazing discounts across all categories. Limited time offers - shop now before they're gone!
+    </p>
+    
+    <div class="offers-container">
+      @for (offer of offers; track offer.title) {
+        <div class="offer-section">
+          <h2 class="offer-title">{{ offer.title }}</h2>
+          <div class="products-grid">
+            @for (product of offer.products; track product.id) {
+              <div class="product-card">
+                <div class="product-image">
+                  <img [src]="product.image" [alt]="product.name">
+                  <div class="discount-badge">-{{ product.discountPercentage }}%</div>
+                </div>
+                <div class="product-info">
+                  <h3 class="product-name">{{ product.name }}</h3>
+                  <div class="product-rating">
+                    @for (star of [1,2,3,4,5]; track star) {
+                      <i 
+                        [class]="star <= product.rating ? 'fas fa-star' : 'far fa-star'"
+                        [class.half]="star > product.rating && star - 0.5 <= product.rating">
+                      </i>
+                    }
+                    <span class="rating-value">({{ product.rating }})</span>
+                  </div>
+                  <div class="product-pricing">
+                    <span class="discount-price">${{ product.discountPrice }}</span>
+                    <span class="original-price">${{ product.originalPrice }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    
+    <div class="vouchers-section">
+      <h2 class="section-title">Purchase Gift Vouchers</h2>
+      <p class="section-description">
+        Give the perfect gift with Souqly vouchers. Available in various denominations with special discounts.
+      </p>
+      
+      <div class="vouchers-grid">
+        @for (voucher of vouchers; track voucher.id) {
+          <div class="voucher-card">
+            <div class="voucher-amount">${{ voucher.amount }}</div>
+            <div class="voucher-price">Buy for ${{ voucher.price }}</div>
+            <div class="voucher-discount">Save {{ voucher.discount }}%</div>
+            <p class="voucher-description">{{ voucher.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>

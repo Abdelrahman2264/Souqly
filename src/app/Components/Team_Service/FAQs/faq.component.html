@@ -1,0 +1,45 @@
+<section class="faq-section">
+  <div class="container">
+    <h1 class="page-title">Frequently Asked Questions</h1>
+    <p class="page-description">
+      Find answers to common questions about Souqly, our services, and how to make the most of your e-commerce experience.
+    </p>
+    
+    <div class="faq-content">
+      <div class="categories-filter">
+        @for (category of categories; track category.id) {
+          <button 
+            (click)="filterByCategory(category.id)"
+            [class.active]="activeCategory === category.id"
+            class="category-btn">
+            {{ category.name }}
+          </button>
+        }
+      </div>
+      
+      <div class="faq-list">
+        @for (item of filteredFaqItems; track item.question) {
+          <div class="faq-item" [class.active]="item.isOpen">
+            <div class="faq-question" (click)="toggleFaqItem(item)">
+              <h3>{{ item.question }}</h3>
+              <span class="toggle-icon">
+                <i [class]="item.isOpen ? 'fas fa-minus' : 'fas fa-plus'"></i>
+              </span>
+            </div>
+            <div class="faq-answer" [class.open]="item.isOpen">
+              <p>{{ item.answer }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      
+      <div class="support-cta">
+        <h2>Still have questions?</h2>
+        <p>Can't find the answer you're looking for? Our support team is here to help.</p>
+        <div class="cta-buttons">
+          <a href="/contact" class="cta-btn primary">Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
