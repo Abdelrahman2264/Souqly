@@ -1,0 +1,197 @@
+<!-- profile.component.html -->
+<div class="profile-container">
+  <!-- Toast Message -->
+  <div class="toast-message" *ngIf="showToast" [class]="toastType">
+    {{ toastMessage }}
+  </div>
+
+  <div class="profile-header">
+    <h1>User Profile</h1>
+    <p>Manage your account information and preferences</p>
+  </div>
+
+  <div class="profile-content" *ngIf="currentUser">
+    <!-- User Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ cartItemCount }}</div>
+          <div class="stat-label">Cart Items</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ favoritesCount }}</div>
+          <div class="stat-label">Favorites</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-tags"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ favoriteDepartmentsCount }}</div>
+          <div class="stat-label">Favorite Departments</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getAccountAge() }}</div>
+          <div class="stat-label">Account Age</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Information -->
+    <div class="profile-section">
+      <div class="section-header">
+        <h2>Profile Information</h2>
+        <button class="btn btn-edit" (click)="toggleEdit()" *ngIf="!isEditing">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+      </div>
+
+      <div class="profile-info" *ngIf="!isEditing">
+        <div class="info-grid">
+          <div class="info-item">
+            <label>User ID:</label>
+            <span class="user-id">{{ currentUser.id }}</span>
+          </div>
+          <div class="info-item">
+            <label>First Name:</label>
+            <span>{{ currentUser.firstName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Last Name:</label>
+            <span>{{ currentUser.lastName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Email:</label>
+            <span>{{ currentUser.email }}</span>
+          </div>
+          <div class="info-item">
+            <label>Phone:</label>
+            <span>{{ currentUser.phone }}</span>
+          </div>
+          <div class="info-item">
+            <label>Country:</label>
+            <span>{{ currentUser.country }}</span>
+          </div>
+          <div class="info-item">
+            <label>City:</label>
+            <span>{{ currentUser.city }}</span>
+          </div>
+          <div class="info-item">
+            <label>Gender:</label>
+            <span>{{ currentUser.gender }}</span>
+          </div>
+          <div class="info-item">
+            <label>Date of Birth:</label>
+            <span>{{ currentUser.dob }}</span>
+          </div>
+          <div class="info-item">
+            <label>Member Since:</label>
+            <span>{{ currentUser.createdAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Form -->
+      <form class="edit-form" *ngIf="isEditing" (ngSubmit)="onSave(form)" #form="ngForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input type="text" id="firstName" name="firstName" [(ngModel)]="editForm.firstName" required>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" id="lastName" name="lastName" [(ngModel)]="editForm.lastName" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" [(ngModel)]="editForm.email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone *</label>
+            <input type="tel" id="phone" name="phone" [(ngModel)]="editForm.phone" required>
+          </div>
+
+          <div class="form-group">
+            <label for="country">Country *</label>
+            <select id="country" name="country" [(ngModel)]="editForm.country" required>
+              <option value="">Select Country</option>
+              <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="city">City *</label>
+            <input type="text" id="city" name="city" [(ngModel)]="editForm.city" required>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender *</label>
+            <select id="gender" name="gender" [(ngModel)]="editForm.gender" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dob">Date of Birth *</label>
+            <input type="date" id="dob" name="dob" [(ngModel)]="editForm.dob" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="!form.valid">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="profile-section danger-zone">
+      <div class="section-header">
+        <h2>Danger Zone</h2>
+      </div>
+      <div class="danger-content">
+        <p>Once you delete your account, there is no going back. Please be certain.</p>
+        <button class="btn btn-danger" (click)="deleteAccount()">
+          <i class="fas fa-trash"></i> Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading or Error State -->
+  <div class="profile-error" *ngIf="!currentUser">
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Profile Not Found</h3>
+      <p>Unable to load your profile. Please try logging in again.</p>
+      <a routerLink="/login" class="btn btn-primary">Go to Login</a>
+    </div>
+  </div>
+</div>

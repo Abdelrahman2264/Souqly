@@ -1,0 +1,38 @@
+<section class="about-us">
+  <div class="container">
+    <h1 class="page-title">About Our Company</h1>
+    <p class="page-description">
+      We are a team of passionate professionals dedicated to delivering exceptional results 
+      for our clients. Get to know the talented individuals who make it all possible.
+    </p>
+    
+    <h2 class="team-title">Meet Our Team</h2>
+    
+    <div class="team-grid">
+      @for (member of teamMembers; track member.employeeNumber) {
+        <div class="team-card">
+          <div class="avatar" [style.background-color]="getAvatarColor(member)">
+            {{ getInitials(member.name) }}
+          </div>
+          
+          <div class="card-content">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p class="job-title">{{ member.jobTitle }}</p>
+            <p class="member-number">{{ member.employeeNumber }}</p>
+            <p class="bio">{{ member.bio }}</p>
+            
+            <div class="social-links">
+              @for (link of member.socialLinks; track link.icon) {
+                <a [href]="link.url" 
+                   target="_blank" 
+                   class="social-link">
+                  <i [class]="'fab fa-' + link.icon"></i>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

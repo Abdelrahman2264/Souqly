@@ -1,0 +1,316 @@
+<app-favorites [isOpen]="isFavoritesOpen" (closeFavorites)="isFavoritesOpen = false"></app-favorites>
+<app-favorites-dep [isOpen]="isFavoriteDepartmentsOpen"
+  (closeFavorites)="isFavoriteDepartmentsOpen = false"></app-favorites-dep>
+<app-cart [isOpen]="isCartOpen" (closeCart)="isCartOpen = false"></app-cart>
+
+<header class="header">
+  <!-- Logo -->
+  <a href="/" class="logo" (mouseenter)="onLogoHover(true)" (mouseleave)="onLogoHover(false)">
+    <img [src]="currentLogo" alt="Souqly Logo" class="logo-image">
+    <span class="logo-text">Souqly</span>
+    <span class="logo-tagline" [style.display]="showTagline ? 'block' : 'none'">
+      Online Marketplace
+    </span>
+  </a>
+
+  <!-- Navigation Menu -->
+  <ul class="nav-menu" [class.active]="isMenuOpen">
+    <!-- Home - Always visible -->
+    <li class="nav-item">
+      <a href="/Home" class="nav-link">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+    </li>
+
+    <!-- Departments Dropdown - Only show when authenticated -->
+    <li class="nav-item dropdown" *ngIf="isAuthenticated">
+      <button type="button" class="nav-link" (click)="toggleDropdown('departments', $event)">
+        <i class="fas fa-th-large"></i>
+        <span>Departments</span>
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+      </button>
+
+      <!-- Departments Mega Menu -->
+      <div class="dropdown-menu mega-menu" [class.show]="isDepartmentsOpen">
+        <div class="mega-menu-content">
+          <h3>All Departments</h3>
+          <ul class="departments-list">
+            <li *ngFor="let dept of departments" class="department-item">
+              <a [routerLink]="['/departments', (dept || '').toLowerCase()]" class="department-link"
+                (click)="$event.stopPropagation()">
+                <i class="fas fa-tag department-icon"></i>
+                <span class="department-name">{{dept}}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+
+
+    <!-- Deals - Only show when authenticated -->
+    <li class="nav-item" *ngIf="isAuthenticated">
+      <a href="/deals" class="nav-link">
+        <i class="fas fa-tag"></i>
+        <span>Deals</span>
+      </a>
+    </li>
+
+    <!-- Join Us Dropdown - Always visible -->
+    <li class="nav-item dropdown">
+      <a href="#" class="nav-link" (click)="$event.preventDefault(); toggleDropdown('joinus', $event)">
+        <i class="fas fa-hands-helping"></i>
+        <span>Join Us</span>
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+      </a>
+      <div class="dropdown-menu" [class.show]="isJoinUsOpen">
+        <a href="/contact" class="dropdown-item">
+          <i class="fas fa-phone"></i>
+          <span>Contact Us</span>
+        </a>
+        <a href="/about" class="dropdown-item">
+          <i class="fas fa-info-circle"></i>
+          <span>About Us</span>
+        </a>
+        <a href="/faq" class="dropdown-item">
+          <i class="fas fa-question-circle"></i>
+          <span>FAQs</span>
+        </a> <a href="/privacy" class="dropdown-item">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Privacy</span>
+        </a>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Right side container -->
+  <div class="header-right">
+    <!-- Search Bar - Only show when authenticated -->
+    <div class="search-container" *ngIf="isAuthenticated">
+      <input type="text" placeholder="Search products..." class="search-input" [(ngModel)]="searchTerm"
+        (keyup.enter)="performSearch()" (keyup)="onSearchInput($event)">
+      <button class="search-btn" (click)="performSearch()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+
+    <!-- User Actions -->
+    <div class="user-actions">
+      <!-- Favorite Departments - Only show when authenticated -->
+      <button class="action-btn" title="Favorite Departments" *ngIf="isAuthenticated"
+        (click)="isFavoriteDepartmentsOpen = true">
+        <i class="fas fa-tags"></i>
+        <span class="action-count">{{ favoriteDepartmentsCount }}</span>
+      </button>
+
+      <!-- Favorites - Only show when authenticated -->
+      <button class="action-btn" title="Favorites" *ngIf="isAuthenticated" (click)="isFavoritesOpen = true">
+        <i class="fas fa-heart"></i>
+        <span class="action-count">{{ favoriteCount }}</span>
+      </button>
+
+      <button class="action-btn" title="Shopping Cart" (click)="isCartOpen = true" *ngIf="isAuthenticated">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="action-count">{{ cartItemCount }}</span>
+      </button>
+      <!-- Profile Dropdown -->
+      <div class="dropdown">
+        <button class="action-btn user-profile" (click)="toggleDropdown('profile', $event)" title="Profile">
+          <i class="fas fa-user"></i>
+        </button>
+
+        <div class="dropdown-menu profile-menu" [class.show]="isProfileOpen"
+          *ngIf="isAuthenticated; else notAuthenticated">
+          <!-- User Info Section -->
+          <div class="user-info" *ngIf="currentUser">
+            <div class="user-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+              <div class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
+              <div class="user-email">{{ currentUser.email }}</div>
+              <div class="user-id">ID: {{ currentUser.id }}</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a routerLink="/profile" class="dropdown-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+          </a>
+          <a routerLink="/dashboard" class="dropdown-item">
+            <i class="fa-solid fa-chart-line"></i> 
+            <span>Dashboard</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+          </a>
+        </div>
+
+        <ng-template #notAuthenticated>
+          <div class="dropdown-menu profile-menu auth-dropdown" [class.show]="isProfileOpen">
+            <a href="/login" class="dropdown-item">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>Sign In</span>
+            </a>
+            <a href="/signup" class="dropdown-item">
+              <i class="fas fa-user-plus"></i>
+              <span>Register</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="/contact" class="dropdown-item">
+              <i class="fas fa-question-circle"></i>
+              <span>Help Center</span>
+            </a>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Theme Switcher - Always visible -->
+      <div class="theme-switcher" (click)="toggleTheme()"
+        [title]="isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'">
+        <i class="fas" [class.fa-moon]="!isDarkTheme" [class.fa-sun]="isDarkTheme"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" (click)="toggleMenu()" [attr.aria-label]="isMenuOpen ? 'Close menu' : 'Open menu'">
+    <span [class.active]="isMenuOpen"></span>
+    <span [class.active]="isMenuOpen"></span>
+    <span [class.active]="isMenuOpen"></span>
+  </button>
+</header>
+
+<!-- Mobile Navigation Overlay -->
+<div class="mobile-nav-overlay" [class.active]="isMenuOpen" (click)="closeMobileMenu()"></div>
+
+<!-- Mobile Navigation Menu -->
+<nav class="mobile-nav" [class.active]="isMenuOpen">
+  <div class="mobile-nav-header">
+    <div class="mobile-nav-logo">
+      <img [src]="currentLogo" alt="Souqly Logo" class="mobile-logo-image">
+      <span class="mobile-logo-text">Souqly</span>
+    </div>
+    <button class="mobile-close-btn" (click)="closeMobileMenu()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="mobile-nav-content">
+    <!-- Home Link -->
+    <a href="/Home" class="mobile-nav-item" (click)="closeMobileMenu()">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+
+    <!-- Departments Section -->
+    <div class="mobile-nav-section" *ngIf="isAuthenticated">
+      <div class="mobile-nav-section-header" (click)="toggleMobileSection('departments')">
+        <i class="fas fa-th-large"></i>
+        <span>Departments</span>
+        <i class="fas fa-chevron-down" [class.rotated]="mobileSections.departments"></i>
+      </div>
+      <div class="mobile-nav-section-content" [class.expanded]="mobileSections.departments">
+        <a *ngFor="let dept of departments" 
+           [routerLink]="['/departments', (dept || '').toLowerCase()]" 
+           class="mobile-nav-subitem"
+           (click)="closeMobileMenu()">
+          <i class="fas fa-tag"></i>
+          <span>{{ dept }}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Deals Link -->
+    <a href="/deals" class="mobile-nav-item" *ngIf="isAuthenticated" (click)="closeMobileMenu()">
+      <i class="fas fa-tag"></i>
+      <span>Deals</span>
+    </a>
+
+    <!-- Join Us Section -->
+    <div class="mobile-nav-section">
+      <div class="mobile-nav-section-header" (click)="toggleMobileSection('joinus')">
+        <i class="fas fa-hands-helping"></i>
+        <span>Join Us</span>
+        <i class="fas fa-chevron-down" [class.rotated]="mobileSections.joinus"></i>
+      </div>
+      <div class="mobile-nav-section-content" [class.expanded]="mobileSections.joinus">
+        <a href="/contact" class="mobile-nav-subitem" (click)="closeMobileMenu()">
+          <i class="fas fa-phone"></i>
+          <span>Contact Us</span>
+        </a>
+        <a href="/about" class="mobile-nav-subitem" (click)="closeMobileMenu()">
+          <i class="fas fa-info-circle"></i>
+          <span>About Us</span>
+        </a>
+        <a href="/faq" class="mobile-nav-subitem" (click)="closeMobileMenu()">
+          <i class="fas fa-question-circle"></i>
+          <span>FAQs</span>
+        </a>
+        <a href="/privacy" class="mobile-nav-subitem" (click)="closeMobileMenu()">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Privacy</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- User Actions for Mobile -->
+    <div class="mobile-user-actions" *ngIf="isAuthenticated">
+      <div class="mobile-user-info" *ngIf="currentUser">
+        <div class="mobile-user-avatar">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="mobile-user-details">
+          <div class="mobile-user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
+          <div class="mobile-user-email">{{ currentUser.email }}</div>
+        </div>
+      </div>
+      
+      <div class="mobile-user-links">
+        <a routerLink="/profile" class="mobile-nav-item" (click)="closeMobileMenu()">
+          <i class="fas fa-user-circle"></i>
+          <span>Profile</span>
+        </a>
+        <a routerLink="/dashboard" class="mobile-nav-item" (click)="closeMobileMenu()">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="mobile-nav-item" (click)="logout(); closeMobileMenu()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Guest Actions for Mobile -->
+    <div class="mobile-guest-actions" *ngIf="!isAuthenticated">
+      <a href="/login" class="mobile-nav-item" (click)="closeMobileMenu()">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Sign In</span>
+      </a>
+      <a href="/signup" class="mobile-nav-item" (click)="closeMobileMenu()">
+        <i class="fas fa-user-plus"></i>
+        <span>Register</span>
+      </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mobile-quick-actions" *ngIf="isAuthenticated">
+      <button class="mobile-action-btn" (click)="isCartOpen = true; closeMobileMenu()">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Cart ({{ cartItemCount }})</span>
+      </button>
+      <button class="mobile-action-btn" (click)="isFavoritesOpen = true; closeMobileMenu()">
+        <i class="fas fa-heart"></i>
+        <span>Favorites ({{ favoriteCount }})</span>
+      </button>
+      <button class="mobile-action-btn" (click)="isFavoriteDepartmentsOpen = true; closeMobileMenu()">
+        <i class="fas fa-tags"></i>
+        <span>Departments ({{ favoriteDepartmentsCount }})</span>
+      </button>
+    </div>
+  </div>
+</nav>

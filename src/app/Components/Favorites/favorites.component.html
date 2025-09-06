@@ -1,0 +1,54 @@
+<div class="favorites-overlay" [class.active]="isOpen" (click)="onOverlayClick($event)">
+  <div class="favorites-sidebar" [class.active]="isOpen" [class.dark-theme]="isDarkTheme">
+    <div class="favorites-header">
+      <h2>Your Favorites</h2>
+      <button class="close-btn" (click)="closeFavorites.emit()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="favorites-content">
+      <div class="empty-favorites" *ngIf="favoriteItems.length === 0">
+        <i class="fas fa-heart"></i>
+        <p>Your favorites list is empty</p>
+        <p>Start adding items you love!</p>
+      </div>
+
+      <div class="favorites-items" *ngIf="favoriteItems.length > 0">
+        <div class="favorites-item" *ngFor="let item of favoriteItems">
+          <div class="item-image">
+            <img [src]="item.thumbnail" [alt]="item.title">
+          </div>
+          <div class="item-details">
+            <h3 class="item-title">{{ item.title }}</h3>
+            <div class="item-pricing">
+              <span class="current-price" *ngIf="item.discountPercentage > 0">
+                ${{ getDiscountedPrice(item.price, item.discountPercentage).toFixed(2) }}
+              </span>
+              <span class="original-price" [class.discounted]="item.discountPercentage > 0">
+                ${{ item.price.toFixed(2) }}
+              </span>
+              <span class="discount-badge" *ngIf="item.discountPercentage > 0">
+                {{ item.discountPercentage }}% OFF
+              </span>
+            </div>
+          </div>
+          <button class="remove-btn" (click)="removeItem(item)" title="Remove from favorites">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="favorites-footer" *ngIf="favoriteItems.length > 0">
+      <div class="favorites-count">
+        <span>{{ favoriteItems.length }} item{{ favoriteItems.length !== 1 ? 's' : '' }}</span>
+      </div>
+      <div class="favorites-actions">
+        <button class="clear-btn" (click)="clearFavorites()">
+          <i class="fas fa-trash"></i> Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
