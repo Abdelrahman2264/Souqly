@@ -20,8 +20,6 @@ Souqly is a modern Angular-based e-commerce system that provides a complete shop
 - 💸 Sale & Discount system  
 - 🎨 Theme Switcher (White / Dark)  
 - 📱 Fully Responsive (Desktop, Tablet, Mobile)  
-- 📊 Canvas Graphs (for Dashboard & Analytics)  
-- 📑 Export Data (Excel, PDF)  
 - 💳 Payment Gateway Integration (MasterCard – Coming Soon)  
 - 👨‍👩‍👧‍👦 Meet Our Team (About section)  
 - 🔔 Toast Notifications (Success / Error)  
@@ -32,7 +30,6 @@ Souqly is a modern Angular-based e-commerce system that provides a complete shop
 - Login – User authentication page  
 - Sign Up – User registration  
 - Forget Password – Password recovery  
-- Dashboard – Admin/User dashboard for quick insights  
 - Home – Landing page with highlighted products  
 - All Product – Browse all available products  
 - Category Page – Category-based product filtering  
@@ -46,7 +43,6 @@ Souqly is a modern Angular-based e-commerce system that provides a complete shop
 ## 🪟 Modals
 - Cart Modal – View items before checkout  
 - Add To Cart Modal – Quick add to cart confirmation  
-- Delete Modal – Confirmation before removing items  
 - Verification Modal – Email/OTP verification  
 
 ## 🔐 Authentication & Logout
