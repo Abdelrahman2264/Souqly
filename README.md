@@ -1,82 +1,138 @@
-# Souqly
+# 🛒 Souqly - Modern E-Commerce Platform
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.5.
+Souqly is a modern Angular-based e-commerce system that provides a complete shopping experience with authentication, responsive design, cart management, and theme switching. It is designed to be user-friendly, mobile-first, and highly customizable.
 
-## Authentication & Logout
+## 📑 Table of Contents
+- Features
+- Pages
+- Modals
+- Authentication System
+- Themes & Styles
+- UI/UX Guidelines
+- Tech Stack
+- Development
+- Project Status
+- Support
 
-The application uses a comprehensive authentication system that stores user data across multiple storage types:
+## ⚙️ Features
+- 🛍️ Add To Cart / Remove From Cart  
+- 🔍 Product Filter & Search  
+- 💸 Sale & Discount system  
+- 🎨 Theme Switcher (White / Dark)  
+- 📱 Fully Responsive (Desktop, Tablet, Mobile)  
+- 📊 Canvas Graphs (for Dashboard & Analytics)  
+- 📑 Export Data (Excel, PDF)  
+- 💳 Payment Gateway Integration (MasterCard – Coming Soon)  
+- 👨‍👩‍👧‍👦 Meet Our Team (About section)  
+- 🔔 Toast Notifications (Success / Error)  
+- 🍪 Cookie-based Authorizations  
+- ✅ Regex Validations for forms  
 
-### Storage Types Used
-- **Cookies**: `souqlyAuth` and `souqlyUser` for session persistence
-- **localStorage**: User data and authentication status
-- **sessionStorage**: Session-specific authentication data
+## 🖥️ Pages
+- Login – User authentication page  
+- Sign Up – User registration  
+- Forget Password – Password recovery  
+- Dashboard – Admin/User dashboard for quick insights  
+- Home – Landing page with highlighted products  
+- All Product – Browse all available products  
+- Category Page – Category-based product filtering  
+- Profile – User profile page  
+- Edit User Data – Update user profile & personal info  
+- Contact Us – Contact form with company details  
+- Support – Customer support center  
+- About Us – Company/team details  
+- Privacy – Privacy and security policies  
 
-### Logout Functionality
-The logout process (`HeaderComponent.logout()`) performs a comprehensive cleanup:
+## 🪟 Modals
+- Cart Modal – View items before checkout  
+- Add To Cart Modal – Quick add to cart confirmation  
+- Delete Modal – Confirmation before removing items  
+- Verification Modal – Email/OTP verification  
 
-1. **Clears all cookies** using multiple domain/path combinations
-2. **Removes localStorage items** (`souqlyUser`, `souqlyAuth`)
-3. **Clears sessionStorage items** (`souqlyUser`, `souqlyAuth`)
-4. **Verifies cleanup** with detailed console logging
-5. **Redirects to home page** and reloads for clean state
+## 🔐 Authentication & Logout
+The application uses a comprehensive authentication system that stores user data across multiple storage types.
 
-### Debug Features
-- Use `CookieService.debugAllStorage()` to view all storage contents
-- Console logging shows detailed verification of storage cleanup
-- Comprehensive error handling for different storage scenarios
+**Storage Types Used:**
+- Cookies: souqlyAuth and souqlyUser for session persistence  
+- localStorage: User data and authentication status  
+- sessionStorage: Session-specific authentication data  
 
-## Development server
+**Logout Functionality**
+- Clears all cookies using multiple domain/path combinations  
+- Removes localStorage items (souqlyUser, souqlyAuth)  
+- Clears sessionStorage items (souqlyUser, souqlyAuth)  
+- Redirects to home page and reloads for clean state  
 
-To start a local development server, run:
+**Debug Features**
+- `CookieService.debugAllStorage()` to view all storage contents  
+- Console logging for detailed verification  
 
+## 🎨 Themes & Styles
+**White Theme**
+- Primary Color: Blue  
+- Text: Black on White background  
+- Navigation: White/Gray navbar  
+- Buttons: Primary, Danger, Warning, Success, Secondary  
+
+**Dark Theme**
+- Primary Color: Info (blue shade)  
+- Text: White on Black background  
+- Navigation: Dark Gray navbar  
+- Buttons: Primary, Danger, Warning, Success, Secondary  
+
+## 🖌️ UI/UX Guidelines
+- Typography: Clear and readable (Roboto / Open Sans)  
+- Layout: Grid-based design with spacing  
+- Rounded corners (12px), soft shadows, hover effects  
+- Smooth animations for theme switch & modals  
+- Responsive with Flexbox/Grid  
+
+## 🛠️ Tech Stack
+- **Frontend Framework:** Angular 20.1.5  
+- **Styling:** CSS3, Flexbox, Grid  
+- **Icons:** Font Awesome, Bootstrap Icons, Google Icons  
+- **Authentication:** Cookies, localStorage, sessionStorage  
+- **Build Tool:** Angular CLI  
+
+## 🚀 Development
+**Run Development Server**
 ```bash
 ng serve
 ```
+Visit [http://localhost:4200](http://localhost:4200).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+**Generate Component**
 ```bash
 ng generate component component-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
+**Build Project**
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+**Run Tests**
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+**Run End-to-End Tests**
 ```bash
 ng e2e
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📌 Project Status
+✅ Pages Complete  
+✅ Features Implemented  
+✅ White & Dark Themes Available  
+🔄 Payment Gateway – Coming Soon  
 
-## Additional Resources
+**Next Improvements:**
+- Wishlist & favorites  
+- Live chat support  
+- Order tracking system  
+- Enhanced analytics  
+- Payment gateway integration  
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📞 Support
+For support, contact the development team or check the documentation.
